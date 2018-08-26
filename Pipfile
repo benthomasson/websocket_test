@@ -7,8 +7,7 @@ name = "pypi"
 docopt = "*"
 gevent = "*"
 websocket-client = "*"
+greenlet = {version = "*", platform_python_implementation="=='CPython'"}
+
 
 [dev-packages]
-
-[requires]
-python_version = "3.6"
