@@ -18,13 +18,14 @@ import websocket
 from docopt import docopt
 import logging
 import sys
+import ssl
+from pprint import pprint
 
 
 class WebsocketChannel(object):
 
     def __init__(self, address):
         self.address = address
-        self.start_socket_thread()
         self.thread = None
 
     def start_socket_thread(self):
@@ -33,7 +34,7 @@ class WebsocketChannel(object):
                                              on_error=self.on_error,
                                              on_close=self.on_close,
                                              on_open=self.on_open)
-        self.thread = gevent.spawn(self.socket.run_forever)
+        self.thread = gevent.spawn(self.socket.run_forever, sslopt={"cert_reqs": ssl.CERT_NONE})
         return self.thread
 
     def put(self, message):
@@ -45,9 +46,12 @@ class WebsocketChannel(object):
 
     def on_open(self, ws=None):
         print('on_open')
+        self.put('hi')
 
-    def on_message(self, ws=None):
+    def on_message(self, *args, **kwargs):
         print('on_message')
+        pprint(args)
+        pprint(kwargs)
 
     def on_close(self, ws=None):
         print('on_close')
@@ -57,7 +61,6 @@ class WebsocketChannel(object):
         print('WebsocketChannel on_error', error)
         self.on_close(ws)
         gevent.sleep(1)
-        self.start_socket_thread()
 
 
 
